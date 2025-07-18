@@ -1,17 +1,22 @@
+
 import { useState } from "react";
 import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-export default function Create() {
+export default function Create({ user }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim() || !description.trim()) return;
-    await addDoc(collection(db, "tasks"), { name, description });
+    if (!name.trim() || !description.trim() || !user) return;
+    await addDoc(collection(db, "tasks"), {
+      name,
+      description,
+      userId: user.uid
+    });
     navigate("/");
   };
 
@@ -39,4 +44,3 @@ export default function Create() {
     </div>
   );
 }
-

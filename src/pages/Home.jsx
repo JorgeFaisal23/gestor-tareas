@@ -1,18 +1,21 @@
+
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
 import { Link } from "react-router-dom";
 
-export default function Home() {
+export default function Home({ user }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const querySnapshot = await getDocs(collection(db, "tasks"));
+      if (!user) return;
+      const q = query(collection(db, "tasks"), where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
       setTasks(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
     fetchTasks();
-  }, []);
+  }, [user]);
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, "tasks", id));

@@ -43,10 +43,10 @@ export default function App() {
       </nav>
       <div className="min-h-screen bg-gradient-to-b from-blue-100 via-green-100 to-yellow-100 p-6">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/edit/:id" element={<Edit />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/" element={<Home user={user} />} />
+          <Route path="/create" element={<Create user={user} />} />
+          <Route path="/edit/:id" element={<Edit user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
         </Routes>
       </div>
     </BrowserRouter>

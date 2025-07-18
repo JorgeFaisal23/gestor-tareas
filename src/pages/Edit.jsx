@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useParams, useNavigate } from "react-router-dom";
 
-export default function Edit() {
+export default function Edit({ user }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const { id } = useParams();
@@ -11,14 +12,16 @@ export default function Edit() {
 
   useEffect(() => {
     const fetchTask = async () => {
-      const docSnap = await getDoc(doc(db, "tasks", id));
-      if (docSnap.exists()) {
-        setName(docSnap.data().name);
-        setDescription(docSnap.data().description);
-      }
+      const docRef = doc(db, "tasks", id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) return navigate("/");
+      const data = docSnap.data();
+      if (data.userId !== user.uid) return navigate("/"); // protección
+      setName(data.name);
+      setDescription(data.description);
     };
     fetchTask();
-  }, [id]);
+  }, [id, user, navigate]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -34,14 +37,14 @@ export default function Edit() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-2 rounded-full border border-blue-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+          className="w-full px-4 py-2 rounded-full border border-blue-400"
         />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-4 py-2 rounded-2xl border border-blue-400 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+          className="w-full px-4 py-2 rounded-2xl border border-blue-400"
         />
-        <button className="w-full bg-blue-500 hover:bg-green-400 text-white font-semibold py-3 rounded-full shadow-lg hover:scale-105 transition">
+        <button className="w-full bg-blue-500 hover:bg-green-400 text-white font-semibold py-3 rounded-full">
           Actualizar
         </button>
       </form>

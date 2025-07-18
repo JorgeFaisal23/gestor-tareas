@@ -1,17 +1,5 @@
-import { auth } from '../firebase';
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 
-export default function Profile() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
+export default function Profile({ user }) {
   if (!user) return <p className="text-center mt-10">Cargando perfil...</p>;
 
   return (
